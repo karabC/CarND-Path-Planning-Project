@@ -214,7 +214,7 @@ int main() {
       int lane = 1;
 
       // Define the reference velocity to target
-      double ref_vel = 49.5; // Unit: mph
+      double ref_vel = 2; // Unit: mph
 
     if (length && length > 2 && data[0] == '4' && data[1] == '2') {
 
@@ -248,6 +248,45 @@ int main() {
 
             int prev_size = previous_path_x.size();
 
+            // SENSOR FUSION Part
+            if (prev_size > 0)
+            {
+              car_s = end_path_s;
+            }
+
+            bool too_close = false;
+
+            //find ref_v to use
+            for (int i = 0; i < sensor_fusion.size(); i++)
+            {
+              // car is in my lane
+              float d = sensor_fusion[i][6]
+              if (d < (2+4 * lane + 2) && d > (2 + 4 *lane -2))
+              {
+                double vx = sensor_fusion[i][3];
+                double vy = sensor_fusion[i][4];
+                double check_speed = sqrt(vx*vx + vy*vy);
+                double check_car_s = sensor_fusion [i][5];
+
+                check_car_s += ((double)prev_size*.02*check_speed);
+
+                if ((check_car_s > car_s) && (check_car_s - car_s) < 30)
+                {
+                  too_close = true;
+                }
+              }
+            }
+
+            if(too_close)
+            {
+              ref_vel -=.224;
+            }
+            else if(ref_vel < 49.5)
+            {
+              ref_vel += .224
+            }
+            //
+
             // Create a list of widely spaced (x,y)way points, evenly spaced at 30m
             // later we will interpolate these waypoints with a spline and fill it in with more points that control speed
             vector<double> ptsx;
@@ -264,7 +303,7 @@ int main() {
             {
               // Use two points that make the path tangent to the car
               double prev_car_x = car_x - cos(car_yaw);
-              double prev_car_y = car_y -sin(car_yaw);
+              double prev_car_y = car_y - sin(car_yaw);
 
               ptsx.push_back(prev_car_x);
               ptsx.push_back(car_x);
@@ -292,6 +331,7 @@ int main() {
             }
 
             // In Frenet add evenly 30m spaced points ahead of the starting reference
+            // 
             vector<double> next_wp0 = getXY(car_s+30, (2+4*lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
             vector<double> next_wp1 = getXY(car_s+60, (2+4*lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
             vector<double> next_wp2 = getXY(car_s+90, (2+4*lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
