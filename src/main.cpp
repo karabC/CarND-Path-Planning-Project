@@ -292,7 +292,7 @@ int main() {
                 car_track[1].push_back(i);
               }else if (d>0){// lane 1 car
                 car_track[0].push_back(i);
-                }						
+              }						
             }
 			
             //find ref_v to use
@@ -323,26 +323,40 @@ int main() {
 				      switch(lane){
                 case 0:
                   if (checkLane(lane, car_track, sensor_fusion, prev_size, car_s, 1))
+                  {
                     lane = 1;
                     ref_vel +=.224;
+                  }
                   else
+                  {
                     ref_vel -=.224;
+                  }
                   break;
                 case 1:
                   if (checkLane(lane, car_track, sensor_fusion, prev_size, car_s, -1))
+                  {
                     lane = 0;
+                  }
                   else if (checkLane(lane, car_track, sensor_fusion, prev_size, car_s, 1))
+                  {
                     lane = 2;
                     ref_vel +=.224;
+                  }
                   else
+                  {
                     ref_vel -=.224;
+                  }
                   break;
                 case 2:
                   if (checkLane(lane, car_track, sensor_fusion, prev_size, car_s, -1))
+                  {
                     lane = 1;
                     ref_vel +=.224;
+                  }
                   else
+                  {
                     ref_vel -=.224;
+                  }
                   break;
                 default:
                   ;
