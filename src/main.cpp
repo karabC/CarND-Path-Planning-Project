@@ -280,8 +280,6 @@ int main() {
               car_s = end_path_s;
             }
 
-            bool too_close = false;
-
             // construction of car track
             vector<vector<double> > car_track(3);             
             for(int i = 0; i < sensor_fusion.size(); i ++){
@@ -295,6 +293,8 @@ int main() {
               }						
             }
 			
+            bool too_close = false;
+            double check_speed = 0;
             //find ref_v to use
             for (int i = 0; i < sensor_fusion.size(); i++)
             {
@@ -304,9 +304,9 @@ int main() {
               {
                 double vx = sensor_fusion[i][3];
                 double vy = sensor_fusion[i][4];
-                double check_speed = sqrt(vx*vx + vy*vy);
                 double check_car_s = sensor_fusion [i][5];
 
+                check_speed = sqrt(vx*vx + vy*vy);
                 check_car_s += ((double)prev_size*.02*check_speed);
 
                 if ((check_car_s > car_s) && (check_car_s - car_s) < 30)
@@ -318,7 +318,11 @@ int main() {
 
             // Lane Change Logic:
             //    If too close with previous car on the same lane, check if possible to switch lane, else slow down
-            if(too_close)
+            if(too_close && (car_speed > check_speed + 5) )
+            {
+                    ref_vel -=.224;
+            }
+            else if (too_close)
             {
 				      switch(lane){
                 case 0:
@@ -367,7 +371,7 @@ int main() {
             {
               ref_vel += .336;
             }
-            else if(ref_vel < 49)
+            else if(ref_vel < 47)
             {
               ref_vel += .224;
             }
