@@ -184,7 +184,9 @@ bool checkLane(int lane, vector<vector<double> > car_track, vector<vector<double
 		if( (check_car_s > car_s) && ((check_car_s - car_s) < 35)){
 			return false;
 		}
-		if( (check_car_s > car_s) && ((check_car_s - car_s) >= 35) && (check_speed < car_speed - 10))
+		if( (check_car_s > car_s) && ((check_car_s - car_s) >= 35) && (check_speed < car_speed - 10)){
+      return false;
+    }
 	}
 	
 	return true;
