@@ -280,7 +280,7 @@ int main() {
               ref_y = previous_path_y[prev_size -1];
 
               double ref_x_prev = previous_path_x[prev_size -2];
-              double ref_t_prev = previous_path_y[prev_size -2];
+              double ref_y_prev = previous_path_y[prev_size -2];
               ref_yaw = atan2(ref_y - ref_y_prev, ref_x - ref_x_prev);
 
               //Use two points that make the path tangent to the previous path's end point
