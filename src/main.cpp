@@ -165,7 +165,7 @@ vector<double> getXY(double s, double d, const vector<double> &maps_s, const vec
 }
 
 
-bool checkLane(int lane, vector<vector<double> > car_track, vector<vector<double> > sensor_fusion, int path_size, double car_s, int lane_change){
+bool checkLane(int lane, vector<vector<double> > car_track, vector<vector<double> > sensor_fusion, int path_size, double car_s, double car_speed, int lane_change){
 	
 	int lane_to_check = lane + lane_change;
 	
@@ -178,13 +178,13 @@ bool checkLane(int lane, vector<vector<double> > car_track, vector<vector<double
 		
 		check_car_s += ((double)path_size*0.02*check_speed); 
 		
-		if((check_car_s < car_s) && ((car_s - check_car_s) < 10)){
+		if((check_car_s < car_s) && ((car_s - check_car_s) < 15)){
 			return false;
 		}
-		if( (check_car_s > car_s) && ((check_car_s - car_s) < 30)){
+		if( (check_car_s > car_s) && ((check_car_s - car_s) < 35)){
 			return false;
 		}
-		
+		if( (check_car_s > car_s) && ((check_car_s - car_s) >= 35) && (check_spped < car_speed - 10))
 	}
 	
 	return true;
@@ -309,7 +309,7 @@ int main() {
                 check_speed = sqrt(vx*vx + vy*vy);
                 check_car_s += ((double)prev_size*.02*check_speed);
 
-                if ((check_car_s > car_s) && (check_car_s - car_s) < 30)
+                if ((check_car_s > car_s) && (check_car_s - car_s) < 60)
                 {
                   too_close = true;
                 }
@@ -318,15 +318,16 @@ int main() {
 
             // Lane Change Logic:
             //    If too close with previous car on the same lane, check if possible to switch lane, else slow down
-            if(too_close && (car_speed > check_speed + 5) )
-            {
-                    ref_vel -=.224;
-            }
-            else if (too_close)
+            // if(too_close && (check_speed > car_speed) )
+            // {
+            //         ref_vel -=.224;
+            // }
+            // else 
+            if (too_close)
             {
 				      switch(lane){
                 case 0:
-                  if (checkLane(lane, car_track, sensor_fusion, prev_size, car_s, 1))
+                  if (checkLane(lane, car_track, sensor_fusion, prev_size, car_s, car_speed, 1))
                   {
                     lane = 1;
                     ref_vel -=.112;
@@ -337,12 +338,12 @@ int main() {
                   }
                   break;
                 case 1:
-                  if (checkLane(lane, car_track, sensor_fusion, prev_size, car_s, -1))
+                  if (checkLane(lane, car_track, sensor_fusion, prev_size, car_s, car_speed, -1))
                   {
                     lane = 0;
                     ref_vel -=.112;
                   }
-                  else if (checkLane(lane, car_track, sensor_fusion, prev_size, car_s, 1))
+                  else if (checkLane(lane, car_track, sensor_fusion, prev_size, car_s, car_speed, 1))
                   {
                     lane = 2;
                     ref_vel -=.112;
@@ -353,7 +354,7 @@ int main() {
                   }
                   break;
                 case 2:
-                  if (checkLane(lane, car_track, sensor_fusion, prev_size, car_s, -1))
+                  if (checkLane(lane, car_track, sensor_fusion, prev_size, car_s, car_speed, -1))
                   {
                     lane = 1;
                     ref_vel -=.112;
