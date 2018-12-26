@@ -260,7 +260,7 @@ int main() {
             for (int i = 0; i < sensor_fusion.size(); i++)
             {
               // car is in my lane
-              float d = sensor_fusion[i][6]
+              float d = sensor_fusion[i][6];
               if (d < (2+4 * lane + 2) && d > (2 + 4 *lane -2))
               {
                 double vx = sensor_fusion[i][3];
@@ -283,7 +283,7 @@ int main() {
             }
             else if(ref_vel < 49.5)
             {
-              ref_vel += .224
+              ref_vel += .224;
             }
             //
 
