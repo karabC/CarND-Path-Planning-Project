@@ -347,6 +347,7 @@ int main() {
                   break;
                 default:
                   ;
+              }
             }
             else if(ref_vel < 49.5)
             {
