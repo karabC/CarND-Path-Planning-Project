@@ -363,6 +363,10 @@ int main() {
                   ;
               }
             }
+            else if(ref_vel < 25)
+            {
+              ref_vel += .336;
+            }
             else if(ref_vel < 49)
             {
               ref_vel += .224;
