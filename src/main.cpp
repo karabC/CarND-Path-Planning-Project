@@ -325,7 +325,7 @@ int main() {
                   if (checkLane(lane, car_track, sensor_fusion, prev_size, car_s, 1))
                   {
                     lane = 1;
-                    ref_vel +=.224;
+                    ref_vel -=.112;
                   }
                   else
                   {
@@ -336,11 +336,12 @@ int main() {
                   if (checkLane(lane, car_track, sensor_fusion, prev_size, car_s, -1))
                   {
                     lane = 0;
+                    ref_vel -=.112;
                   }
                   else if (checkLane(lane, car_track, sensor_fusion, prev_size, car_s, 1))
                   {
                     lane = 2;
-                    ref_vel +=.224;
+                    ref_vel -=.112;
                   }
                   else
                   {
@@ -351,7 +352,7 @@ int main() {
                   if (checkLane(lane, car_track, sensor_fusion, prev_size, car_s, -1))
                   {
                     lane = 1;
-                    ref_vel +=.224;
+                    ref_vel -=.112;
                   }
                   else
                   {
@@ -362,7 +363,7 @@ int main() {
                   ;
               }
             }
-            else if(ref_vel < 49.5)
+            else if(ref_vel < 49)
             {
               ref_vel += .224;
             }
