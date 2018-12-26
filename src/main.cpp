@@ -164,7 +164,7 @@ vector<double> getXY(double s, double d, const vector<double> &maps_s, const vec
 
 }
 
-int check_close(auto sensor_fusion, int lane, double car_s)
+bool check_close(auto sensor_fusion, int lane, double car_s, int prev_size)
 {
 
   bool too_close = false;
@@ -283,8 +283,8 @@ int main() {
             {
               car_s = end_path_s;
             }
-            
-            too_close = check_close(sensor_fusion, lane, car_s);
+
+            bool too_close = check_close(sensor_fusion, lane, car_s, prev_size);
 
             if(too_close)
             {
