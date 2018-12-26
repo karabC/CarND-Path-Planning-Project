@@ -164,6 +164,36 @@ vector<double> getXY(double s, double d, const vector<double> &maps_s, const vec
 
 }
 
+int check_close(auto sensor_fusion, int lane, double car_s)
+{
+
+  bool too_close = false;
+
+  //find ref_v to use
+  for (int i = 0; i < sensor_fusion.size(); i++)
+  {
+    // car is in my lane
+    float d = sensor_fusion[i][6];
+    if (d < (2+4 * lane + 2) && d > (2 + 4 *lane -2))
+    {
+      double vx = sensor_fusion[i][3];
+      double vy = sensor_fusion[i][4];
+      double check_speed = sqrt(vx*vx + vy*vy);
+      double check_car_s = sensor_fusion [i][5];
+
+      check_car_s += ((double)prev_size*.02*check_speed);
+
+      if ((check_car_s > car_s) && (check_car_s - car_s) < 30)
+      {
+        too_close = true;
+      }
+    }
+  }
+
+  return too_close;
+
+}
+
 int main() {
   uWS::Hub h;
 
@@ -253,29 +283,8 @@ int main() {
             {
               car_s = end_path_s;
             }
-
-            bool too_close = false;
-
-            //find ref_v to use
-            for (int i = 0; i < sensor_fusion.size(); i++)
-            {
-              // car is in my lane
-              float d = sensor_fusion[i][6];
-              if (d < (2+4 * lane + 2) && d > (2 + 4 *lane -2))
-              {
-                double vx = sensor_fusion[i][3];
-                double vy = sensor_fusion[i][4];
-                double check_speed = sqrt(vx*vx + vy*vy);
-                double check_car_s = sensor_fusion [i][5];
-
-                check_car_s += ((double)prev_size*.02*check_speed);
-
-                if ((check_car_s > car_s) && (check_car_s - car_s) < 30)
-                {
-                  too_close = true;
-                }
-              }
-            }
+            
+            too_close = check_close(sensor_fusion, lane, car_s);
 
             if(too_close)
             {
