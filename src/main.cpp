@@ -292,8 +292,7 @@ int main() {
                 car_track[1].push_back(i);
               }else if (d>0){// lane 1 car
                 car_track[0].push_back(i);
-                }
-              }						
+                }						
             }
 			
             //find ref_v to use
