@@ -164,34 +164,30 @@ vector<double> getXY(double s, double d, const vector<double> &maps_s, const vec
 
 }
 
-bool check_close(auto sensor_fusion, int lane, double car_s, int prev_size)
-{
 
-  bool too_close = false;
-
-  //find ref_v to use
-  for (int i = 0; i < sensor_fusion.size(); i++)
-  {
-    // car is in my lane
-    float d = sensor_fusion[i][6];
-    if (d < (2+4 * lane + 2) && d > (2 + 4 *lane -2))
-    {
-      double vx = sensor_fusion[i][3];
-      double vy = sensor_fusion[i][4];
-      double check_speed = sqrt(vx*vx + vy*vy);
-      double check_car_s = sensor_fusion [i][5];
-
-      check_car_s += ((double)prev_size*.02*check_speed);
-
-      if ((check_car_s > car_s) && (check_car_s - car_s) < 30)
-      {
-        too_close = true;
-      }
-    }
-  }
-
-  return too_close;
-
+bool checkLane(int lane, vector<vector<double> > car_track, vector<vector<double> > sensor_fusion, int path_size, double car_s, int lane_change){
+	
+	int lane_to_check = lane + lane_change;
+	
+	for(int i = 0 ; i < car_track[lane_to_check].size(); i ++){ //loop for 0,1 and 2 lane numbers
+	
+		double vx = sensor_fusion[car_track[lane_to_check][i]][3];
+		double vy = sensor_fusion[car_track[lane_to_check][i]][4];
+		double check_speed = sqrt((vx*vx)+(vy*vy));
+		double check_car_s = sensor_fusion[car_track[lane_to_check][i]][5];
+		
+		check_car_s += ((double)path_size*0.02*check_speed); 
+		
+		if((check_car_s < car_s) && ((car_s - check_car_s) < 10)){
+			return false;
+		}
+		if( (check_car_s > car_s) && ((check_car_s - car_s) < 30)){
+			return false;
+		}
+		
+	}
+	
+	return true;
 }
 
 int main() {
@@ -284,11 +280,54 @@ int main() {
               car_s = end_path_s;
             }
 
-            bool too_close = check_close(sensor_fusion, lane, car_s, prev_size);
+            bool too_close = false;
+
+            //find ref_v to use
+            for (int i = 0; i < sensor_fusion.size(); i++)
+            {
+              // car is in my lane
+              float d = sensor_fusion[i][6];
+              if (d < (2+4 * lane + 2) && d > (2 + 4 *lane -2))
+              {
+                double vx = sensor_fusion[i][3];
+                double vy = sensor_fusion[i][4];
+                double check_speed = sqrt(vx*vx + vy*vy);
+                double check_car_s = sensor_fusion [i][5];
+
+                check_car_s += ((double)prev_size*.02*check_speed);
+
+                if ((check_car_s > car_s) && (check_car_s - car_s) < 30)
+                {
+                  too_close = true;
+                }
+              }
+            }
 
             if(too_close)
             {
-              ref_vel -=.224;
+				      switch(lane){
+                case 0:
+                  if (checkLane(lane, car_track, sensor_fusion, prev_size, car_s, 1))
+                    lane = 1;
+                  else
+                    ref_vel -=.224;
+                  break;
+                case 1:
+                  if (checkLane(lane, car_track, sensor_fusion, prev_size, car_s, -1))
+                    lane = 0;
+                  else if (checkLane(lane, car_track, sensor_fusion, prev_size, car_s, 1))
+                    lane = 2;
+                  else
+                    ref_vel -=.224;
+                  break;
+                case 2:
+                  if (checkLane(lane, car_track, sensor_fusion, prev_size, car_s, -1))
+                    lane = 1;
+                  else
+                    ref_vel -=.224;
+                  break;
+                default:
+                  ;
             }
             else if(ref_vel < 49.5)
             {
