@@ -164,7 +164,9 @@ vector<double> getXY(double s, double d, const vector<double> &maps_s, const vec
 
 }
 
-
+// Check if feasible to change lane
+//  if Target lane got car within range -15, +35, keep same lane
+//  if Target lane got car > +35 range but with much lower speed, keep same lane. (As might not be able to desccelerate after adding speed.)
 bool checkLane(int lane, vector<vector<double> > car_track, vector<vector<double> > sensor_fusion, int path_size, double car_s, double car_speed, int lane_change){
 	
 	int lane_to_check = lane + lane_change;
@@ -320,11 +322,7 @@ int main() {
 
             // Lane Change Logic:
             //    If too close with previous car on the same lane, check if possible to switch lane, else slow down
-            // if(too_close && (check_speed > car_speed) )
-            // {
-            //         ref_vel -=.224;
-            // }
-            // else 
+            // 
             if (too_close)
             {
 				      switch(lane){
